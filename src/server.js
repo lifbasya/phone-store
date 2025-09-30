@@ -1,8 +1,9 @@
-import express from 'express';
-import { testConnection } from './db.js';
-import usersRouter from './routes/usersRouter.js';
+import express from "express";
+import { testConnection } from "./config/db.js";
+import usersRouter from "./routes/usersRouter.js";
 
 const app = express();
+app.use(express.json());
 
 const PORT = 3000;
 
