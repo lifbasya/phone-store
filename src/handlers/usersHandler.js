@@ -4,7 +4,9 @@ import { pool } from "../config/db.js";
 
 export const getAllUsersHandler = async (req, res) => {
   try {
-    const [users] = await pool.query("SELECT fullname, username, email, role, address, phone_number, age FROM users");
+    const [users] = await pool.query(
+      "SELECT id, fullname, username, email, role, address, phone_number, age FROM users"
+    );
 
     res.status(200).json({
       status: "success",
@@ -21,7 +23,7 @@ export const getUsersByIdHandler = async (req, res) => {
   try {
     // Hanya memilih kolom yang diinginkan: fullname, username, email, role
     const [users] = await pool.query(
-      "SELECT fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+      "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
       [id]
     );
 
@@ -118,21 +120,23 @@ export const addUserHandler = async (req, res) => {
 
 export const updateUserHandler = async (req, res) => {
   const { id } = req.params;
-  const { name, email } = req.body;
+  const { fullname, username, email, role, address, phone_number, age } =
+    req.body;
   try {
-    const [result] = await pool.query(
-      "UPDATE users SET name=?, email=? WHERE id=?",
-      [name, email, id]
+    await pool.query(
+      "UPDATE users SET fullname=?, username=?, email=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
+      [fullname, username, email, role, address, phone_number, age, id]
     );
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        status: "fail",
-        message: "User not found",
-      });
-    }
+
+    const [userupdated] = await pool.query(
+      "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+      [id]
+    );
+
     res.status(200).json({
       status: "success",
-      data: { id, name, email },
+      message: "User updated successfully",
+      data: userupdated[0],
     });
   } catch (error) {
     console.error(error);
