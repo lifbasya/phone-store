@@ -49,7 +49,7 @@ export const getUsersByIdHandler = async (req, res) => {
   }
 };
 
-export const addUserHandler = async (req, res) => {
+export const addUsersHandler = async (req, res) => {
   const { fullname, username, email, password, role } = req.body;
 
   if (!fullname || !fullname.trim()) {
@@ -118,7 +118,7 @@ export const addUserHandler = async (req, res) => {
   }
 };
 
-export const updateUserHandler = async (req, res) => {
+export const updateUsersHandler = async (req, res) => {
   const { id } = req.params;
   const { fullname, username, email, role, address, phone_number, age } =
     req.body;
@@ -137,6 +137,26 @@ export const updateUserHandler = async (req, res) => {
       status: "success",
       message: "User updated successfully",
       data: userupdated[0],
+    });
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+export const deleteUsersHandler = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await pool.query("DELETE FROM users WHERE id=?", [id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        status: "fail",
+        message: "User not found",
+      });
+    }
+    res.status(200).json({
+      status: "success",
+      message: "User deleted successfully",
     });
   } catch (error) {
     console.error(error);

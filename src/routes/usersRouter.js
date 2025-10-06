@@ -1,12 +1,13 @@
 import express from "express";
-import { addUserHandler, getAllUsersHandler, getUsersByIdHandler, updateUserHandler } from "../handlers/usersHandler.js";
+import { addUsersHandler, deleteUsersHandler, getAllUsersHandler, getUsersByIdHandler, updateUsersHandler } from "../handlers/usersHandler.js";
 
 
 const usersRouter = express.Router();
 
 usersRouter.get("/users", getAllUsersHandler);
 usersRouter.get("/users/:id", getUsersByIdHandler)
-usersRouter.post("/users", addUserHandler);
-usersRouter.put("/users/:id", updateUserHandler);
+usersRouter.post("/users", addUsersHandler);
+usersRouter.put("/users/:id", updateUsersHandler);
+usersRouter.delete("/users/:id", deleteUsersHandler);
 
 export default usersRouter;
