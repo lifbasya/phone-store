@@ -1,4 +1,5 @@
 import { pool } from "../config/db.js";
+import { ResponseError } from "../errors/responseError.js";
 
 export const getAllUser = async () => {
   const [users] = await pool.query(
@@ -8,9 +9,14 @@ export const getAllUser = async () => {
 };
 
 export const getUserById = async (id) => {
-  const [user] = await pool.query(
+  const [users] = await pool.query(
     "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
     [id]
   );
-  return user[0];
+
+  if (users.length === 0) {
+    throw new ResponseError(404, "User not found");
+  }
+
+  return users[0];
 };
