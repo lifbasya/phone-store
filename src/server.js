@@ -3,6 +3,7 @@ import { testConnection } from "./config/db.js";
 import usersRouter from "./routes/usersRouter.js";
 import productsRouter from "./routes/productsRoute.js";
 import cors from "cors";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,8 @@ const PORT = 3000;
 
 app.use(usersRouter);
 app.use(productsRouter);
+
+app.use (errorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

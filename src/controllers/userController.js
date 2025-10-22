@@ -1,6 +1,6 @@
 import * as userService from '../services/userService.js';
 
-export const getAllUsersHandler = async (req, res) => {
+export const getAllUsersHandler = async (req, res, next) => {
     try {
         const response = await userService.getAllUser();
         res.status(200).json({
@@ -9,15 +9,11 @@ export const getAllUsersHandler = async (req, res) => {
         });
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: "error",
-            message: "Internal Server Error",
-        });
+        next(error);
     }
 }
 
-export const getUsersByIdHandler = async (req, res) => {
+export const getUsersByIdHandler = async (req, res, next) => {
   const { id } = req.params;
     try {
         const response = await userService.getUserById(id);
@@ -33,10 +29,6 @@ export const getUsersByIdHandler = async (req, res) => {
         });
     }
     catch (error) {
-        console.error(error);
-        res.status(500).json({
-            status: "error",
-            message: "Internal Server Error",
-        });
+        next(error);
     }
     }
