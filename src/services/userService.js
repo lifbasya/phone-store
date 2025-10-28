@@ -1,5 +1,7 @@
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
+import { createUserSchema } from "../validations/userValidations.js";
+import validate from "../validations/validate.js";
 
 export const getAllUser = async () => {
   const [users] = await pool.query(
@@ -22,7 +24,8 @@ export const getUserById = async (id) => {
 };
 
 export const createUser = async (req) => {
-  const { fullname, username, email, password, role } = req;
+  const validatedData = validate(createUserSchema, req);
+  const { fullname, username, email, password, role } = validatedData;
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role) VALUES (?, ?, ?, ?, ?)",
@@ -42,10 +45,10 @@ export const createUser = async (req) => {
 
 export const updateUser = async (id, req) => {
   const { fullname, username, email, role, address, phone_number, age } = req;
-  
+
   // Check if user exists
   await getUserById(id);
-  
+
   const [result] = await pool.query(
     "UPDATE users SET fullname=?, username=?, email=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
     [fullname, username, email, role, address, phone_number, age, id]
@@ -63,12 +66,11 @@ export const updateUser = async (id, req) => {
     role,
     address,
     phone_number,
-    age
+    age,
   };
 };
 
 export const deleteUser = async (id) => {
-
   // Check if user exists
   await getUserById(id);
 
@@ -79,6 +81,6 @@ export const deleteUser = async (id) => {
   }
 
   return {
-    message: "User deleted successfully"
+    message: "User deleted successfully",
   };
 };

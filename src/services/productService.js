@@ -1,5 +1,7 @@
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
+import { createProductSchema } from "../validations/productValidations.js";
+import validate from "../validations/validate.js";
 
 export const getAllProduct = async () => {
   const [products] = await pool.query("SELECT * FROM products");
@@ -7,7 +9,9 @@ export const getAllProduct = async () => {
 };
 
 export const getProductById = async (id) => {
-  const [products] = await pool.query("SELECT * FROM products WHERE id=?", [id]);
+  const [products] = await pool.query("SELECT * FROM products WHERE id=?", [
+    id,
+  ]);
 
   if (products.length === 0) {
     throw new ResponseError(404, "Product not found");
@@ -17,7 +21,8 @@ export const getProductById = async (id) => {
 };
 
 export const createProduct = async (req) => {
-  const { user_id, name, description, price, stock } = req;
+  const validatedData = validate(createProductSchema, req);
+  const { user_id, name, description, price, stock } = validatedData;
 
   const [products] = await pool.query(
     "INSERT INTO products (user_id, name, description, price, stock) VALUES (?, ?, ?, ?, ?)",
@@ -59,7 +64,6 @@ export const updateProduct = async (id, req) => {
 };
 
 export const deleteProduct = async (id) => {
-
   const [result] = await pool.query("DELETE FROM products WHERE id = ?", [id]);
 
   if (result.affectedRows === 0) {
@@ -67,6 +71,6 @@ export const deleteProduct = async (id) => {
   }
 
   return {
-    message: "Product deleted successfully"
+    message: "Product deleted successfully",
   };
 };
