@@ -1,9 +1,9 @@
 import express from "express";
 import { testConnection } from "./config/db.js";
 import usersRouter from "./routes/usersRouter.js";
-import productsRouter from "./routes/productsRoute.js";
 import cors from "cors";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import productsRouter from "./routes/productsRouter.js";
 
 const app = express();
 app.use(cors());

@@ -1,12 +1,12 @@
 // productsRouter.js
 import express from "express";
-import { addProductsHandler, deleteProductsHandler, getAllProductsHandler, getProductsByIdHandler, updateProductsHandler } from "../handlers/productHandler.js";
+import { createProductsHandler, deleteProductsHandler, getAllProductsHandler, getProductsByIdHandler, updateProductsHandler } from "../controllers/productController.js";
 
 const productsRouter = express.Router();
 
 productsRouter.get("/products", getAllProductsHandler);
 productsRouter.get("/products/:id", getProductsByIdHandler);
-productsRouter.post("/products", addProductsHandler);
+productsRouter.post("/products", createProductsHandler);
 productsRouter.put("/products/:id", updateProductsHandler);
 productsRouter.delete("/products/:id", deleteProductsHandler);
 
