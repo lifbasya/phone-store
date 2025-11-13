@@ -4,6 +4,7 @@ import usersRouter from "./routes/usersRouter.js";
 import cors from "cors";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import productsRouter from "./routes/productsRouter.js";
+import authRouter from "./routes/authRouter.js";
 
 const app = express();
 app.use(cors());
@@ -11,6 +12,7 @@ app.use(express.json());
 
 const PORT = 3000;
 
+app.use(authRouter);
 app.use(usersRouter);
 app.use(productsRouter);
 

@@ -1,7 +1,11 @@
 import { pool } from "../config/db.js";
 import { ResponseError } from "../errors/responseError.js";
-import { createUserSchema } from "../validations/userValidations.js";
+import {
+  createUserSchema,
+  updateUserSchema,
+} from "../validations/userValidations.js";
 import validate from "../validations/validate.js";
+import bcrypt from "bcrypt";
 
 export const getAllUser = async () => {
   const [users] = await pool.query(
@@ -44,30 +48,40 @@ export const createUser = async (req) => {
 };
 
 export const updateUser = async (id, req) => {
-  const { fullname, username, email, role, address, phone_number, age } = req;
+  const validated = validate(updateUserSchema, req);
+  const { fullname, username, email, role, address, phone_number, age } =
+    validated;
 
   // Check if user exists
   await getUserById(id);
 
+  const hashedPassword = bcrypt.hash(password, 10);
+
   const [result] = await pool.query(
-    "UPDATE users SET fullname=?, username=?, email=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
-    [fullname, username, email, role, address, phone_number, age, id]
+    "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
+    [
+      fullname,
+      username,
+      email,
+      hashedPassword,
+      role,
+      address,
+      phone_number,
+      age,
+      id,
+    ]
   );
 
   if (result.affectedRows === 0) {
     throw new ResponseError(404, "Failed to update user");
   }
 
-  return {
-    id,
-    fullname,
-    username,
-    email,
-    role,
-    address,
-    phone_number,
-    age,
-  };
+  const [userUpdate] =await pool.query(
+    "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
+    [id]
+  );
+  
+  return userUpdate[0];
 };
 
 export const deleteUser = async (id) => {
