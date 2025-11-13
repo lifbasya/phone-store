@@ -28,12 +28,14 @@ export const getUserById = async (id) => {
 };
 
 export const createUser = async (req) => {
-  const validatedData = validate(createUserSchema, req);
-  const { fullname, username, email, password, role } = validatedData;
+  const validated = validate(createUserSchema, req);
+  const { fullname, username, email, password, role } = validated;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role) VALUES (?, ?, ?, ?, ?)",
-    [fullname, username, email, password, role]
+    [fullname, username, email, hashedPassword, role]
   );
 
   const newUser = {
@@ -49,13 +51,13 @@ export const createUser = async (req) => {
 
 export const updateUser = async (id, req) => {
   const validated = validate(updateUserSchema, req);
-  const { fullname, username, email, role, address, phone_number, age } =
+  const { fullname, username, email, password, role, address, phone_number, age } =
     validated;
 
   // Check if user exists
   await getUserById(id);
 
-  const hashedPassword = bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const [result] = await pool.query(
     "UPDATE users SET fullname=?, username=?, email=?, password=?, role=?, address=?, phone_number=?, age=? WHERE id=?",
@@ -80,7 +82,7 @@ export const updateUser = async (id, req) => {
     "SELECT id, fullname, username, email, role, address, phone_number, age FROM users WHERE id=?",
     [id]
   );
-  
+
   return userUpdate[0];
 };
 

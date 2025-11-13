@@ -9,18 +9,27 @@ export const register = async (req) => {
     fullname,
     username,
     email,
+    password,
     role,
     address,
-    password,
     phone_number,
     age,
   } = validated;
 
-  const hashedPassword = bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   const [users] = await pool.query(
     "INSERT INTO users (fullname, username, email, password, role, address, phone_number, age) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-    [fullname, username, email, hashedPassword, role, address, phone_number, age]
+    [
+      fullname,
+      username,
+      email,
+      hashedPassword,
+      role,
+      address,
+      phone_number,
+      age,
+    ]
   );
 
   const newUser = {
