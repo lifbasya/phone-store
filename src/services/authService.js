@@ -50,7 +50,7 @@ export const register = async (req) => {
 export const login = async (req) => {
   const { email, password } = validate(loginSchema, req);
 
-  const [rows] = await pool.query("SELECT * FROM users WHERE email= ?", [email]);
+  const [rows] = await pool.query("SELECT * FROM users WHERE email= ? LIMIT 1", [email]);
 
   if (rows.length === 0) {
     throw new ResponseError(404, "email atau password salah");
