@@ -1,5 +1,6 @@
 import { pool } from "../config/db.js";
-import { registerSchema } from "../validations/authValidations.js";
+import { ResponseError } from "../errors/responseError.js";
+import { loginSchema, registerSchema } from "../validations/authValidations.js";
 import validate from "../validations/validate.js";
 import bcrypt from "bcrypt";
 
@@ -44,4 +45,32 @@ export const register = async (req) => {
   };
 
   return newUser;
+};
+
+export const login = async (req) => {
+  const { email, password } = validate(loginSchema, req);
+
+  const [rows] = await pool.query("SELECT * FROM users WHERE email= ?", [email]);
+
+  if (rows.length === 0) {
+    throw new ResponseError(404, "email atau password salah");
+  }
+
+  const user = rows[0];
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    throw new ResponseError(401, "email atau password salah")
+  }
+
+  return {
+    id: user.insertId,
+    fullname: user.fullname,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    address: user.address,
+    phone_number: user.phone_number,
+    age: user.age,
+  }
 };
