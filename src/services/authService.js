@@ -53,7 +53,7 @@ export const login = async (req) => {
   const [rows] = await pool.query("SELECT * FROM users WHERE email= ? LIMIT 1", [email]);
 
   if (rows.length === 0) {
-    throw new ResponseError(404, "email atau password salah");
+    throw new ResponseError(401, "email atau password salah");
   }
 
   const user = rows[0];
